@@ -2,8 +2,8 @@
 Description="mj-service"
 
 [Service]
-WorkingDirectory=/home/opc/mj.publish
-ExecStart=/usr/bin/dotnet /home/opc/mj.publish/mj-service.dll
+WorkingDirectory=/home/opc/mj/mj.publish
+ExecStart=/usr/bin/dotnet /home/opc/mj/mj.publish/mj-service.dll
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
