@@ -4,9 +4,10 @@
      sudo cp mj-service.service /etc/systemd/system/mj-service.service
 
      sudo systemctl daemon-reload
-     sudo systemctl enable mj-worker.service
-     sudo systemctl start mj-worker.service
-     sudo systemctl stop mj-worker.service
+     sudo systemctl stop mj-worker.service;sudo systemctl stop mj-service.service
+     sudo systemctl enable mj-worker.service;sudo systemctl enable mj-service.service
+     sudo systemctl start mj-worker.service;sudo systemctl start mj-service.service
+    
      sudo systemctl status mj-worker.service 
 
 [개발 완료후 배포 패키지 준비]
