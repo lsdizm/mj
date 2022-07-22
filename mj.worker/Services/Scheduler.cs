@@ -57,7 +57,9 @@ public class Scheduler : IScheduler
             }
             else 
             {
-                result.AddRange(apiResult.response.body.items.item);
+                if (apiResult.response.body.items != null && apiResult.response.body.items.item != null){
+                    result.AddRange(apiResult.response.body.items.item);
+                }
             }
             pageNo = pageNo + 1;
             }

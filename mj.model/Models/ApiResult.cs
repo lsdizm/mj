@@ -18,7 +18,7 @@ namespace mj.model {
 
     public class Body
     {
-        public Items items { get; set; }
+        public Items? items { get; set; }
         public int? numOfRows { get; set; }
         public int? pageNo { get; set; }
         public int? totalCount { get; set; }
@@ -26,7 +26,7 @@ namespace mj.model {
 
     public class Items
     {
-        public IEnumerable<RaceResult> item { get; set; }
+        public IEnumerable<RaceResult>? item { get; set; }
     }
 
 }

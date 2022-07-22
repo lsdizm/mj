@@ -22,6 +22,7 @@ public class QueryController : ControllerBase
         using (var connection = _databases.Connect()) 
         {
             await connection.OpenAsync().ConfigureAwait(false);            
+            // TO-DO : 공통화
             var sql = await Dapper.SqlMapper.QueryFirstAsync<string>(connection, $"select SQL_CONTENT from SQL_STORAGE where id = '{id}'").ConfigureAwait(false);
 
             if (!string.IsNullOrWhiteSpace(sql)) {
