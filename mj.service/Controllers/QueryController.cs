@@ -11,28 +11,41 @@ namespace mj.service.Controllers;
 public class QueryController : ControllerBase
 {
     private readonly IDataBases _databases;
-    public QueryController(IDataBases databases)
+    private readonly ILogger<QueryController> _logger;
+    public QueryController(IDataBases databases,
+        ILogger<QueryController> logger)
     {
         _databases = databases;
+        _logger = logger;
     }
 
-    [HttpGet("queries/{id}")]
-    public async Task<IActionResult> GetQuery(string id)
+    [HttpGet("queries")]
+    public async Task<IActionResult> GetQuery()
     {
-        using (var connection = _databases.Connect()) 
-        {
-            await connection.OpenAsync().ConfigureAwait(false);            
-            // TO-DO : 공통화
-            var sql = await Dapper.SqlMapper.QueryFirstAsync<string>(connection, $"select SQL_CONTENT from SQL_STORAGE where id = '{id}'").ConfigureAwait(false);
+        var result = await _databases.SelectAllSqls().ConfigureAwait(false);
+        return Ok(result);
+    }
 
-            if (!string.IsNullOrWhiteSpace(sql)) {
-                var result = await Dapper.SqlMapper.QueryAsync<dynamic>(connection, sql).ConfigureAwait(false);
-                return Ok(result);
-            }
-            else 
-            {
-                return BadRequest("empty sql data");
-            }
-        }   
+    [HttpPut("queries/{id}")]
+    public async Task<IActionResult> GetQuery(string id, [FromBody]object jsonParameter )
+    {
+        var result = await _databases.SelectAsync<dynamic>(id, jsonParameter).ConfigureAwait(false);
+        return Ok(result);
+
+        // using (var connection = _databases.Connect()) 
+        // {
+        //     await connection.OpenAsync().ConfigureAwait(false);            
+        //     // TO-DO : 공통화
+        //     var sql = await Dapper.SqlMapper.QueryFirstAsync<string>(connection, $"select SQL_CONTENT from SQL_STORAGE where id = '{id}'").ConfigureAwait(false);
+
+        //     if (!string.IsNullOrWhiteSpace(sql)) {
+        //         var result = await Dapper.SqlMapper.QueryAsync<dynamic>(connection, sql).ConfigureAwait(false);
+        //         return Ok(result);
+        //     }
+        //     else 
+        //     {
+        //         return BadRequest("empty sql data");
+        //     }
+        // }   
     }
 }
