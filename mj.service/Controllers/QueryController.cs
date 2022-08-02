@@ -11,11 +11,14 @@ namespace mj.service.Controllers;
 public class QueryController : ControllerBase
 {
     private readonly IDataBases _databases;
+    private readonly IDataAPI _dataapi;
     private readonly ILogger<QueryController> _logger;
     public QueryController(IDataBases databases,
+        IDataAPI dataapi,
         ILogger<QueryController> logger)
     {
         _databases = databases;
+        _dataapi = dataapi;
         _logger = logger;
     }
 
@@ -47,5 +50,12 @@ public class QueryController : ControllerBase
         //         return BadRequest("empty sql data");
         //     }
         // }   
+    }
+
+    [HttpGet("apis/race-result")]
+    public async Task<IActionResult> GetRaceResult([FromQuery]DateTime fromDate, [FromQuery]DateTime toDate)
+    {
+        var result = await _dataapi.GetRaceResult(fromDate, toDate).ConfigureAwait(false);
+        return Ok(result);
     }
 }

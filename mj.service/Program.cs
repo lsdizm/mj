@@ -18,6 +18,7 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 });
 
 builder.Services.AddScoped<IDataBases, DataBases>();
+builder.Services.AddScoped<IDataAPI, DataAPI>();
 
 var app = builder.Build();
 

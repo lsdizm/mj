@@ -36,8 +36,8 @@ public class Scheduler : IScheduler
         var result = new List<RaceResult>();
         var pageNo = 1;
         var numOfRows = 10;
-        var rc_date_fr = DateTime.Now.AddDays(-5).ToString("yyyyMMdd");
-        var rc_date_to = DateTime.Now.ToString("yyyyMMdd");;
+        var rc_date_fr = DateTime.Now.AddDays(-7).ToString("yyyyMMdd");
+        var rc_date_to = DateTime.Now.AddDays(7).ToString("yyyyMMdd");;
         var serviceKey = "gKTNtNTmRwLKq8JD1zkpfaggw28u5FJ%2F%2BCZ3PpQxX15sOjBrSoWWMf2oSe3dG%2BJqsIcXim5EW5xlTx1jxGqKgA%3D%3D";
 
         while (true) 

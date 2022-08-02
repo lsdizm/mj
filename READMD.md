@@ -23,4 +23,5 @@
 [개발시 참조 추가]
      sudo dotnet add package Dapper
      sudo dotnet add package Mysql.Data
+     dotnet add reference ../mj.model/mj.model.csproj
      
