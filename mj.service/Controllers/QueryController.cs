@@ -34,28 +34,19 @@ public class QueryController : ControllerBase
     {
         var result = await _databases.SelectAsync<dynamic>(id, jsonParameter).ConfigureAwait(false);
         return Ok(result);
-
-        // using (var connection = _databases.Connect()) 
-        // {
-        //     await connection.OpenAsync().ConfigureAwait(false);            
-        //     // TO-DO : 공통화
-        //     var sql = await Dapper.SqlMapper.QueryFirstAsync<string>(connection, $"select SQL_CONTENT from SQL_STORAGE where id = '{id}'").ConfigureAwait(false);
-
-        //     if (!string.IsNullOrWhiteSpace(sql)) {
-        //         var result = await Dapper.SqlMapper.QueryAsync<dynamic>(connection, sql).ConfigureAwait(false);
-        //         return Ok(result);
-        //     }
-        //     else 
-        //     {
-        //         return BadRequest("empty sql data");
-        //     }
-        // }   
     }
 
     [HttpGet("apis/race-result")]
     public async Task<IActionResult> GetRaceResult([FromQuery]DateTime fromDate, [FromQuery]DateTime toDate)
     {
         var result = await _dataapi.GetRaceResult(fromDate, toDate).ConfigureAwait(false);
+        return Ok(result);
+    }
+
+    [HttpGet("apis/horse-result")]
+    public async Task<IActionResult> GetHorseResult([FromQuery]string meet, [FromQuery] string rank)
+    {
+        var result = await _dataapi.GetHorceResult(meet, rank).ConfigureAwait(false);
         return Ok(result);
     }
 }

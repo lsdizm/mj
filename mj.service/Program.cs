@@ -24,6 +24,7 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseHttpLogging();
 app.UseHttpsRedirection();
 app.UseCertificateForwarding();
 app.UseAuthorization();

@@ -1,17 +1,19 @@
 using System.Web;
 using System.Dynamic;
-//using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using mj.model;
+using Microsoft.Extensions.Logging;
 
 namespace mj.connect {
     public class DataAPI : IDataAPI
     {
+        private readonly ILogger<DataAPI> _logger;
         private const string serviceKey = "gKTNtNTmRwLKq8JD1zkpfaggw28u5FJ%2F%2BCZ3PpQxX15sOjBrSoWWMf2oSe3dG%2BJqsIcXim5EW5xlTx1jxGqKgA%3D%3D";
-        public DataAPI()
+        public DataAPI(ILogger<DataAPI> logger)
         {
+            _logger = logger;
         }
 
         private HttpClient GetHttpClient()
@@ -24,13 +26,14 @@ namespace mj.connect {
             return client;
         }
 
-        private async Task<List<T>> GetFromAPI<T>(string path, Dictionary<string, string> parameters)
+        private async Task<List<T>> GetFromAPI<T>(string path, Dictionary<string, string> parameters) where T : class
         {
             var result = new List<T>();
             var pageNo = 1;
+            var numOfRows = 10;
 
             parameters.TryAdd("pageNo", "1");
-            parameters.TryAdd("numOfRows", "10");
+            parameters.TryAdd("numOfRows", numOfRows.ToString());
             parameters.TryAdd("serviceKey", serviceKey);
 
             using (var client = GetHttpClient())
@@ -40,7 +43,8 @@ namespace mj.connect {
                     try
                     {
                         var queryString = string.Join("&", parameters.Select(s => string.Format("{0}={1}", s.Key, s.Value)));
-                        var response = await client.GetAsync($"{path}?{queryString}").ConfigureAwait(false);
+                        var url = $"{path}?{queryString}";
+                        var response = await client.GetAsync(url).ConfigureAwait(false);
                         response.EnsureSuccessStatusCode();
                         var responseString = await response.Content.ReadAsStringAsync();                
                         var apiResult = JsonSerializer.Deserialize<ApiResult>(responseString);
@@ -50,17 +54,29 @@ namespace mj.connect {
                         {
                             break;
                         }
-                        else 
-                        {
-                            if (apiResult.response.body.items != null && apiResult.response.body.items.item != null)
+                        else if (apiResult.response.body.items.GetType() == typeof(System.Text.Json.JsonElement))
+                        {                            
+                            var items = (apiResult.response.body.items as System.Text.Json.JsonElement?);
+                            var itemsJsonString = JsonSerializer.Serialize(items);
+                            if (!string.IsNullOrWhiteSpace(itemsJsonString) && itemsJsonString != "\"\"") 
                             {
-                                //result.AddRange(apiResult.response.body.items.item);
+                                var modelResult = JsonSerializer.Deserialize<JsonElement>(itemsJsonString);
+                                modelResult.TryGetProperty("item", out var modelResultProperty);                                        
+                                var modelResultPropertyValue = modelResultProperty.Deserialize(typeof(List<T>));
+                                result.AddRange((modelResultPropertyValue as List<T>));
                             }
                         }
+
+                        if (apiResult.response.body.totalCount < (pageNo * numOfRows))
+                        {
+                            break;
+                        }
+
                         pageNo = pageNo + 1;
                     }
-                    catch (Exception)
-                    {
+                    catch (Exception ex)
+                    {                    
+                        _logger.LogInformation(ex.ToString());
                         break;
                     }
                 }
@@ -71,12 +87,30 @@ namespace mj.connect {
 
         public async Task<List<RaceResult>> GetRaceResult(DateTime fromDate, DateTime toDate)
         {
-            var path = "B551015/API186/SeoulRace";
-            var result = new List<RaceResult>();
-            var pageNo = 1;
-            var numOfRows = 10;
-            var rc_date_fr = fromDate.ToString("yyyyMMdd");
-            var rc_date_to = toDate.ToString("yyyyMMdd");
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("rc_date_fr", fromDate.ToString("yyyyMMdd"));
+            parameters.Add("rc_date_to", toDate.ToString("yyyyMMdd"));
+            var result = await GetFromAPI<RaceResult>("B551015/API186/SeoulRace", parameters).ConfigureAwait(false);
+            return result;
+        }
+    
+        public async Task<List<HorseResult>> GetHorceResult(string meet, string rank)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("meet", meet);
+            parameters.Add("rank", rank);
+            var result = await GetFromAPI<HorseResult>("B551015/racehorselist/getracehorselist", parameters).ConfigureAwait(false);
+            return result;
+        }
+    }
+}
+/*
+
+
+
+
+            var rc_date_fr = ;
+            var  = ;
 
             using (var client = GetHttpClient())
             {
@@ -97,7 +131,7 @@ namespace mj.connect {
                         else 
                         {
                             if (apiResult.response.body.items != null && apiResult.response.body.items.item != null){
-                                result.AddRange(apiResult.response.body.items.item);
+                                // result.AddRange(apiResult.response.body.items.item);
                             }
                         }
                         pageNo = pageNo + 1;
@@ -110,7 +144,62 @@ namespace mj.connect {
 
                 return result;
             }
-        }
-    }
-}
 
+
+
+
+
+            return resulta;
+            var path = "B551015/racehorselist/getracehorselist";
+            var result = new List<HorseResult>();
+            var pageNo = 1;
+            var numOfRows = 10;
+
+            using (var client = GetHttpClient())
+            {
+                while (true) 
+                {
+                    try
+                    {
+                        var url = $"{path}?pageNo={pageNo}&numOfRows={numOfRows}&meet={meet}&rank={rank}&serviceKey={serviceKey}";                                                
+                        var response = await client.GetAsync(url).ConfigureAwait(false);
+                        response.EnsureSuccessStatusCode();
+                        var responseString = await response.Content.ReadAsStringAsync();                
+                        var apiResult = JsonSerializer.Deserialize<ApiResult>(responseString);
+
+                        if (apiResult == null || apiResult.response  == null || apiResult.response.body == null ||
+                            apiResult.response.body.totalCount.HasValue == false)
+                        {
+                            throw new Exception("API ERROR ");                            
+                        }
+                        else if (apiResult.response.body.items.GetType() == typeof(System.Text.Json.JsonElement))
+                        {                            
+                            var items = (apiResult.response.body.items as System.Text.Json.JsonElement?);
+                            var itemsJsonString = JsonSerializer.Serialize(items);
+                            if (!string.IsNullOrWhiteSpace(itemsJsonString) && itemsJsonString != "\"\"") 
+                            {
+                                var modelResult = JsonSerializer.Deserialize<HorseResultApiItems>(itemsJsonString);
+                                if (modelResult != null && modelResult.item.Any())
+                                {
+                                    result.AddRange(modelResult.item);
+                                }
+                            }
+                        }
+
+                        if (apiResult.response.body.totalCount < (pageNo * numOfRows))
+                        {
+                            break;
+                        }
+
+                        pageNo = pageNo + 1;
+
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogInformation(result.Count.ToString());
+                        _logger.LogInformation(ex.ToString());
+                        break;
+                    }
+                }
+
+                return result;*/

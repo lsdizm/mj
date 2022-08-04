@@ -1,3 +1,8 @@
+[환경설정]
+     node 설치
+     dotnet core 6.0 설치 (dotnet-sdk-6.0.302-win-x64)
+
+
 [서버 방화벽 오픈 - 오라클 리눅스 (centos)]
      sudo systemctl firewalld stop
      sudo vi /etc/firewalld/zones/public.xml
