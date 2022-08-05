@@ -8,11 +8,14 @@ public class Scheduler : IScheduler
 {
     private readonly ILogger<Scheduler> _logger;
     private readonly IDataBases _databases;
+    private readonly IDataAPI _dataapi;
 
     public Scheduler(ILogger<Scheduler> logger,
+        IDataAPI dataapi,
         IDataBases databases)
     {
         _databases = databases;
+        _dataapi = dataapi;
         _logger = logger;
     }
     
@@ -28,50 +31,11 @@ public class Scheduler : IScheduler
 
     private async Task PostAsyncApi()
     {
-        var client = new HttpClient();
-        client.BaseAddress = new Uri("https://apis.data.go.kr/");
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        var rc_date_fr = DateTime.Now.AddDays(-7);
+        var rc_date_to = DateTime.Now.AddDays(7);
 
-        var result = new List<RaceResult>();
-        var pageNo = 1;
-        var numOfRows = 10;
-        var rc_date_fr = DateTime.Now.AddDays(-7).ToString("yyyyMMdd");
-        var rc_date_to = DateTime.Now.AddDays(7).ToString("yyyyMMdd");;
-        var serviceKey = "gKTNtNTmRwLKq8JD1zkpfaggw28u5FJ%2F%2BCZ3PpQxX15sOjBrSoWWMf2oSe3dG%2BJqsIcXim5EW5xlTx1jxGqKgA%3D%3D";
+        var result = await _dataapi.GetRaceResult(rc_date_fr, rc_date_to).ConfigureAwait(false);
 
-        while (true) 
-        {
-            try
-            {
-                var response = await client.GetAsync($"B551015/API186/SeoulRace?pageNo={pageNo}&numOfRows={numOfRows}&rc_date_fr={rc_date_fr}&rc_date_to={rc_date_to}&serviceKey={serviceKey}").ConfigureAwait(false);
-                response.EnsureSuccessStatusCode();
-                var responseString = await response.Content.ReadAsStringAsync();                
-                var apiResult = 
-                    JsonSerializer.Deserialize<ApiResult>(responseString);
-
-            if (apiResult == null || apiResult.response  == null || apiResult.response.body == null ||
-                apiResult.response.body.totalCount.HasValue == false)
-            {
-                break;
-            }
-            else 
-            {
-                if (apiResult.response.body.items != null && apiResult.response.body.items.item != null){
-                    //result.AddRange(apiResult.response.body.items.item);
-                }
-            }
-            pageNo = pageNo + 1;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation(ex.ToString());
-                break;
-            }
-            
-
-        }
-        
         if (result.Any()) 
         {
             using (var connection = _databases.Connect()) 
@@ -83,12 +47,11 @@ public class Scheduler : IScheduler
                     var sql = $"insert into RACE_RESULT (chaksun, diffTot, divide, hrName, hrno, jkName, jkNo, meet, noracefl, prow, prowName, prtr, prtrName, rankKind, rc10dusu, rcAge, rcBudam, rcChul, rcCode, rcDate, rcDiff2, rcDiff3, rcDiff4, rcDiff5, rcDist, rcFrflag, rcGrade, rcHrfor, rcHrnew, rcNo, rcNrace, rcOrd, rcP1Odd, rcP2Odd, rcP3Odd, rcP4Odd, rcP5Odd, rcP6Odd, rcP8Odd, rcPlansu, rcRank, rcSex, rcSpcbu, rcTime, rcVtdusu, rundayth, track, weath, wgHr) values ({item.chaksun}, {item.diffTot}, {item.divide}, '{item.hrName}', '{item.hrno}', '{item.jkName}', '{item.jkNo}', '{item.meet}', '{item.noracefl}', {item.prow}, '{item.prowName}', '{item.prtr}', '{item.prtrName}', {item.rankKind}, {item.rc10dusu}, '{item.rcAge}', {item.rcBudam}, {item.rcChul}, '{item.rcCode}', {item.rcDate}, {item.rcDiff2}, {item.rcDiff3}, {item.rcDiff4}, {item.rcDiff5}, {item.rcDist}, '{item.rcFrflag}', '{item.rcGrade}', '{item.rcHrfor}', '{item.rcHrnew}', {item.rcNo}, '{item.rcNrace}', {item.rcOrd}, {item.rcP1Odd}, {item.rcP2Odd}, {item.rcP3Odd}, {item.rcP4Odd}, {item.rcP5Odd}, {item.rcP6Odd}, {item.rcP8Odd}, {item.rcPlansu}, '{item.rcRank}', '{item.rcSex}', {item.rcSpcbu}, {item.rcTime}, {item.rcVtdusu}, {item.rundayth}, '{item.track}', '{item.weath}', {item.wgHr});";
                     await _databases.ExecuteAsync(sql, connection).ConfigureAwait(false);
                 }
+
+                await _databases.SaveLog(connection, "RACE_RESULT", DateTime.Now, 
+                    string.Format("{0} ~ {1} : {2}", rc_date_fr.ToString("yyyyMMdd"), rc_date_to.ToString("yyyyMMdd"), result.Count().ToString()));
             }   
         }
-
-
-        _logger.LogInformation(result.Count().ToString());
-
     }
 
 

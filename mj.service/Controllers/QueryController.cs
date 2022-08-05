@@ -49,4 +49,16 @@ public class QueryController : ControllerBase
         var result = await _dataapi.GetHorceResult(meet, rank).ConfigureAwait(false);
         return Ok(result);
     }
+
+    [HttpGet("db/log-save")]
+    public async Task<IActionResult> SaveLog([FromQuery]string title, [FromQuery] DateTime dateTime, [FromQuery] string logContent)
+    {
+        using (var connection = _databases.Connect()) 
+        {
+            await connection.OpenAsync().ConfigureAwait(false);
+            var result = await _databases.SaveLog(connection, title, dateTime, logContent).ConfigureAwait(false);
+            return Ok(result);
+
+        }   
+    }
 }
