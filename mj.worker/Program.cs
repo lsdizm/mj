@@ -6,6 +6,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         services.AddHostedService<Worker>();
         services.AddScoped<IDataBases, DataBases>();
+        services.AddScoped<IDataAPI, DataAPI>();
         services.AddScoped<IScheduler, Scheduler>();
     })
     .Build();

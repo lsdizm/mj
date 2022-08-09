@@ -56,6 +56,14 @@ namespace mj.connect {
                 }
             }   
         }
+
+        public async Task<int> SaveLog(MySql.Data.MySqlClient.MySqlConnection connection, string title, DateTime dateTime, string logContent)
+        {
+            var sql = $"insert into API_LOG (ID, TITLE, DATETIME, LOG_CONTENTS) values ('{Guid.NewGuid().ToString()}', '{title}', '{dateTime.ToString("yyyy-MM-dd HH:mm:ss")}', '{logContent}');";                    
+            var command = new MySql.Data.MySqlClient.MySqlCommand(sql, connection);
+            var result = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+            return result;            
+        }
     }
 }
 

@@ -6,5 +6,7 @@ namespace mj.connect {
 
         Task<List<string>> SelectAllSqls();
         Task<List<T>> SelectAsync<T>(string sqlId, object jsonParameters);
+
+        Task<int> SaveLog(MySql.Data.MySqlClient.MySqlConnection connection, string title, DateTime dateTime, string logContent);
     }
 }
