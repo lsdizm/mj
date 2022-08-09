@@ -1,0 +1,7 @@
+namespace mj.model {
+    public class RaceSchedule
+    {
+        public DateTime RACEDATE { get; set; }
+        public string? HorseNumber {get; set;}
+    }
+}

@@ -30,4 +30,28 @@
      sudo dotnet add package Dapper
      sudo dotnet add package Mysql.Data
      dotnet add reference ../mj.model/mj.model.csproj
+
+
+[예측모델 및 변수들]
+     Master Data
+     - Horse
+     - Rider
+     - Trainer
+     - Owner
+
+     Peridic Data
+     - Race Schedule / Result
+
+     Varient
+     - Ranking
+     - Competition (Horse / Rider)
+     - Race Time / Number
+     - Weather
+
+     Predical Data
+     - By Portion
+     
+     Predical Result
+     
+     
      
