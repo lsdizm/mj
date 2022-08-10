@@ -49,12 +49,15 @@ namespace mj.connect {
                         var responseString = await response.Content.ReadAsStringAsync();                
                         var apiResult = JsonSerializer.Deserialize<ApiResult>(responseString);
 
+                        #pragma warning disable CS8602 // null cast
+                        #pragma warning disable CS8604 // null cast
                         if (apiResult == null || apiResult.response  == null || apiResult.response.body == null ||
                             apiResult.response.body.totalCount.HasValue == false)
                         {
                             break;
                         }
-                        else if (apiResult.response.body.items.GetType() == typeof(System.Text.Json.JsonElement))
+                        else if (apiResult.response.body.items != null && apiResult.response.body.items.HasValue &&
+                                apiResult.response.body.items.GetType() == typeof(System.Text.Json.JsonElement))
                         {                            
                             var items = (apiResult.response.body.items as System.Text.Json.JsonElement?);
                             var itemsJsonString = JsonSerializer.Serialize(items);
@@ -63,9 +66,14 @@ namespace mj.connect {
                                 var modelResult = JsonSerializer.Deserialize<JsonElement>(itemsJsonString);
                                 modelResult.TryGetProperty("item", out var modelResultProperty);                                        
                                 var modelResultPropertyValue = modelResultProperty.Deserialize(typeof(List<T>));
-                                result.AddRange((modelResultPropertyValue as List<T>));
+                                if (modelResultPropertyValue != null) 
+                                {
+                                    result.AddRange((modelResultPropertyValue as List<T>));
+                                }
                             }
                         }
+                        #pragma warning restore CS8604 // null cast
+                        #pragma warning restore CS8602 // null cast
 
                         if (apiResult.response.body.totalCount < (pageNo * numOfRows))
                         {
@@ -85,21 +93,26 @@ namespace mj.connect {
             }
         }
 
-        public async Task<List<RaceApiResult>> GetRaceResult(DateTime fromDate, DateTime toDate)
+        public async Task<List<RaceResultApi>> GetRaceResult(DateTime fromDate, DateTime toDate)
+        {
+            return null;
+        }
+
+        public async Task<List<RaceApi>> GetRaceResultDetail(DateTime fromDate, DateTime toDate)
         {
             var parameters = new Dictionary<string, string>();
             parameters.Add("rc_date_fr", fromDate.ToString("yyyyMMdd"));
             parameters.Add("rc_date_to", toDate.ToString("yyyyMMdd"));
-            var result = await GetFromAPI<RaceApiResult>("B551015/API186/SeoulRace", parameters).ConfigureAwait(false);
+            var result = await GetFromAPI<RaceApi>("B551015/API186/SeoulRace", parameters).ConfigureAwait(false);
             return result;
         }
     
-        public async Task<List<HorseResult>> GetHorceResult(string meet, string rank)
+        public async Task<List<HorseApi>> GetHorceResult(string meet, string rank)
         {
             var parameters = new Dictionary<string, string>();
             parameters.Add("meet", meet);
             parameters.Add("rank", rank);
-            var result = await GetFromAPI<HorseResult>("B551015/racehorselist/getracehorselist", parameters).ConfigureAwait(false);
+            var result = await GetFromAPI<HorseApi>("B551015/racehorselist/getracehorselist", parameters).ConfigureAwait(false);
             return result;
         }
     }

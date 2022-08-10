@@ -3,7 +3,8 @@ using mj.model;
 namespace mj.connect {
     public interface IDataAPI
     {
-        Task<List<RaceApiResult>> GetRaceResult(DateTime fromDate, DateTime toDate);
-        Task<List<HorseResult>> GetHorceResult(string meet, string rank);
+        Task<List<RaceResultApi>> GetRaceResult(DateTime fromDate, DateTime toDate);
+        Task<List<RaceApi>> GetRaceResultDetail(DateTime fromDate, DateTime toDate);
+        Task<List<HorseApi>> GetHorceResult(string meet, string rank);
     }
 }

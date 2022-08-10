@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 
 namespace mj.model {
-    public class HorseResult
+    public class HorseApi
     {
         public int? age { get; set; }
         public int? chulYn { get; set; }

@@ -83,11 +83,4 @@ public class QueryController : ControllerBase
         
         return Ok(true);
     }
-
-    [HttpGet("migrate/horse")]
-    public async Task<IActionResult> GetHorse([FromQuery]string keyword)
-    {
-        //var result = await _dataapi.GetHorceResult(meet, rank).ConfigureAwait(false);
-        return Ok(true);
-    }
 }
