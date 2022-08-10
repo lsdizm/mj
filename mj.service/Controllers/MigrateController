@@ -22,6 +22,8 @@ public class MigrateController : ControllerBase
         _logger = logger;
     }
 
+    
+
     // [HttpPut("update-horse")]
     // public async Task<IActionResult> UpdateHorse()
     // {
@@ -52,10 +54,10 @@ public class MigrateController : ControllerBase
     //     return Ok(result);
     // }
 
-    // [HttpGet("horse")]
-    // public async Task<IActionResult> GetHorse([FromQuery]string keyword)
-    // {
-    //     //var result = await _dataapi.GetHorceResult(meet, rank).ConfigureAwait(false);
-    //     return Ok(true);
-    // }
+    [HttpGet("horse")]
+    public async Task<IActionResult> GetHorse([FromQuery]string keyword)
+    {
+        //var result = await _dataapi.GetHorceResult(meet, rank).ConfigureAwait(false);
+        return Ok(true);
+    }
 }

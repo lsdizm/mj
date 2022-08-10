@@ -1,5 +1,5 @@
 namespace mj.model {
-    public class RaceResult
+    public class RaceApiResult
     {
         public int? chaksun { get; set; }
         public decimal? diffTot { get; set; }

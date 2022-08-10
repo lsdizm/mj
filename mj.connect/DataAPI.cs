@@ -85,12 +85,12 @@ namespace mj.connect {
             }
         }
 
-        public async Task<List<RaceResult>> GetRaceResult(DateTime fromDate, DateTime toDate)
+        public async Task<List<RaceApiResult>> GetRaceResult(DateTime fromDate, DateTime toDate)
         {
             var parameters = new Dictionary<string, string>();
             parameters.Add("rc_date_fr", fromDate.ToString("yyyyMMdd"));
             parameters.Add("rc_date_to", toDate.ToString("yyyyMMdd"));
-            var result = await GetFromAPI<RaceResult>("B551015/API186/SeoulRace", parameters).ConfigureAwait(false);
+            var result = await GetFromAPI<RaceApiResult>("B551015/API186/SeoulRace", parameters).ConfigureAwait(false);
             return result;
         }
     
