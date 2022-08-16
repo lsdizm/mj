@@ -31,6 +31,15 @@
      sudo dotnet add package Mysql.Data
      dotnet add reference ../mj.model/mj.model.csproj
 
+[기능 동작]
+    - RaceResult 에 결과 업로드
+    - RaceSchedule 에 예정 업로드 (시점이 언제임?)
+    
+    1. 결과 뷰어 (vue.js / materialDesign참고)
+    2. 예측 뷰어, 계산 정보 (vue.js / materialDesign참고)
+    3. URL/시스템접속정보등은 configure 로 이동
+    4. docker 배포
+
 
 [예측모델 및 변수들]
      Master Data
@@ -57,3 +66,8 @@
 [공공 API 변경]
 결과 다른 API 로참조 : 한국마사회_경주별상세성적표
 순위에 따라 적용할수 있도록 함     
+
+
+[UI]
+
+[CORS 회피]
