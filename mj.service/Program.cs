@@ -26,8 +26,9 @@ builder.Services.AddCors(options =>{
             .AllowAnyMethod()
             .AllowAnyHeader()
             .WithOrigins(new string[]{
-                "http://localhost:7031",
-                "https://localhost:7030",
+                "http://localhost:8080",
+                "http://10.0.0.185",
+                "http://10.0.0.185:8080",
             })
     );
 
@@ -38,7 +39,6 @@ builder.Services.AddCors(options =>{
             .AllowAnyOrigin()
     );
 });
-
 
 
 var app = builder.Build();

@@ -22,8 +22,7 @@ public class QueryController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("queries")]
-    [EnableCors("MjServicePolicy")]
+    [HttpGet("queries")]    
     public async Task<IActionResult> GetQuery()
     {
         var result = await _databases.SelectAllSqls().ConfigureAwait(false);
