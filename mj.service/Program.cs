@@ -20,6 +20,27 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 builder.Services.AddScoped<IDataBases, DataBases>();
 builder.Services.AddScoped<IDataAPI, DataAPI>();
 
+builder.Services.AddCors(options =>{
+    options.AddDefaultPolicy(
+        policyBuilder => policyBuilder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins(new string[]{
+                "http://localhost:7031",
+                "https://localhost:7030",
+            })
+    );
+
+    options.AddPolicy("MjServicePolicy",
+        policyBuilder => policyBuilder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowAnyOrigin()
+    );
+});
+
+
+
 var app = builder.Build();
 
 app.UseSwagger();
@@ -29,6 +50,9 @@ app.UseHttpsRedirection();
 app.UseCertificateForwarding();
 app.UseAuthorization();
 app.MapControllers();
+
+app.UseCors();
+
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions 
 {
