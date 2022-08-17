@@ -29,6 +29,8 @@ builder.Services.AddCors(options =>{
                 "http://localhost:8080",
                 "http://10.0.0.185",
                 "http://10.0.0.185:8080",
+                "http://152.70.232.248/:8080",
+                "http://152.70.232.248",                
             })
     );
 

@@ -23,7 +23,7 @@
      sudo systemctl status mj-worker.service 
 
 [개발 완료후 배포 패키지 준비]
-     dotnet publish -c Release -o ../mj.publish 
+     sudo dotnet publish -c Release -o ../mj.publish 
      -- 이후 push 한다음 서버에서 받아서 서비스 재시작
 
 [개발시 참조 추가]
